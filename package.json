@@ -1,0 +1,12 @@
+{
+  "name": "greenpilot",
+  "version": "1.0.0",
+  "description": "An AI-assisted Q&A platform that reuses existing answers to reduce electricity usage and improve sustainability. When a user asks a question, the system checks if an answer exists before generating a new one with AI.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
