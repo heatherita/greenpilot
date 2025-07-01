@@ -1,4 +1,6 @@
 from flask import Flask
+
+from backend.models.data_helper import DataHelper
 from database import db
 from flask_cors import CORS
 
@@ -18,10 +20,14 @@ def create_app():
     with app.app_context():
         #       db.drop_all()
         db.create_all()
+        # DataHelper.add_dummy_qa_data()
 
     return app
 
 
 if __name__ == "__main__":
-    app = create_app()
-    app.run(debug=True)
+        app = create_app()
+        # app.run(debug=True)
+        app.run(host="0.0.0.0", port=5000, debug=True)
+
+

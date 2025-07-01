@@ -1,6 +1,10 @@
-from flask import Flask, Blueprint, request, jsonify
+from flask import Flask, Blueprint, request, redirect, jsonify, render_template
 from openai import OpenAI
-from models import QuestionAnswer
+
+from backend.models.data_helper import DataHelper
+from backend.models.question import Question
+# from models.question import Question
+# from models.user import User
 # from database import SessionLocal, engine, Base
 from database import db
 from dotenv import load_dotenv
@@ -14,21 +18,31 @@ openai = OpenAI() #magically gets them from environment
 @bp.route("/ask", methods=['POST'])
 def ask():
     data = request.json
-    question = data.get("question")
+    question_text = data.get("question")
 
     # db = SessionLocal()
-    existing = QuestionAnswer.query.filter_by().filter_by(question=question).first()
-    # existing = db.query(QuestionAnswer).filter_by(question=question).first()
+    existing = Question.query.filter_by().filter_by(text=question_text).first()
+    #existing = db.query(QuestionAnswer).filter_by(question=question).first()
     if existing:
         return jsonify({"answer": existing.answer, "source": "cached"})
 
     response = openai.chat.completions.create(
         model="gpt-4",
-        messages=[{"role": "user", "content": question}]
+        messages=[{"role": "user", "content": question_text}]
     )
     answer = response.choices[0].message.content
 
-    qa = QuestionAnswer(question=question, answer=answer)
-    db.session.add(qa)
+    question = Question(name="a new question", text=question_text)
+    db.session.add(question)
     db.session.commit()
     return jsonify({"answer": answer, "source": "ai"})
+
+@bp.route('/')
+def index():
+    return render_template('index.html')
+
+
+@bp.route('/data/add')
+def add_data():
+    DataHelper.add_dummy_qa_data()
+    return redirect('/')
