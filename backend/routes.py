@@ -6,7 +6,7 @@ from backend.models.question import Question
 # from models.question import Question
 # from models.user import User
 # from database import SessionLocal, engine, Base
-from database import db
+from backend.models import db
 from dotenv import load_dotenv
 
 # Base.metadata.create_all(bind=engine)

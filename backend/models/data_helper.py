@@ -1,7 +1,7 @@
 # from user import User
-from backend.database import db
+from backend.models import db
 from backend.models.answer import Answer
-from sqlalchemy.orm.exc import NoResultFound
+# from sqlalchemy.orm.exc import NoResultFound
 # from answer import Answer
 from backend.models.user import User
 

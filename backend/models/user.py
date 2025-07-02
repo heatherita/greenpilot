@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
-from sqlalchemy.sql import func
-from backend.database import db
+# from sqlalchemy.sql import func
+from backend.models import db
 import datetime
 import functools
 
