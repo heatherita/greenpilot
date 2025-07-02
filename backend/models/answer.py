@@ -5,6 +5,8 @@ from backend.models import db
 
 
 class Answer(db.Model):
+    __tablename__ = 'answer'
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
     text = db.Column(db.Text)

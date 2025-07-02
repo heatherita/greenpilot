@@ -5,6 +5,7 @@ from backend.models import db
 
 
 class Question(db.Model):
+    __tablename__ = 'question'
     id = db.Column(db.Integer, primary_key=True)
     # answerCount = db.Column(db.Integer)
     name = db.Column(db.String(200))
