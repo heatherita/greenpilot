@@ -1,6 +1,8 @@
 # from user import User
 from backend.models import db
 from backend.models.answer import Answer
+from backend.models.qa import QuestionAnswer
+from backend.models.question import Question
 # from sqlalchemy.orm.exc import NoResultFound
 # from answer import Answer
 from backend.models.user import User
@@ -28,19 +30,19 @@ class DataHelper:
             ['t-shirt date', 'it was in 1984',1,1, 2],
             ['name origin', 'Achebe(Nigerian origin) meaning the goddess protects from the Igbo people of Nigeria.',2,1,1]
         ]
+
+        dummy_qa_items = [
+            [0,0],
+            [0,1],
+            [1,2],
+            [1,3],
+            [2,4],
+            ]
         users = []
+        questions = []
+        answers = []
 
         # Step 1: add users
-
-        # try:
-        # prior_answers = db.session.query(User).filter(User.id == 1).one()
-            # Process the result
-        # if prior_answers:
-        #     print("there are ", prior_answers, " prior answers already")
-            # return;
-        # except NoResultFound:
-
-
         for i, user_data in enumerate(dummy_users):
             myuser = User(firstName=user_data[0], lastName=user_data[1], email=user_data[2])
             db.session.add(myuser)
@@ -52,11 +54,22 @@ class DataHelper:
         for i, answer_data in enumerate(dummy_answer_items):
             answer = Answer(name=answer_data[0],text=answer_data[1],upvoteCount=answer_data[2],downvoteCount=answer_data[3], author_id=users[answer_data[4]].id)
             db.session.add(answer)
-            # firstname, lastname, email = user_data
-            # Find which answer(s) this user should belong to
-            # for answer_index, (_, _, answer_indices) in enumerate(dummy_answer_items):
-            #     if i in user_indices:
-            #         user = User(firstname=user_data[0], lastname=user_data[1], email=user_data[2], posting_id=postings[post_index].id)
-            #         db.session.add(comment)
+            answers.append(answer)
+
+        db.session.flush()  # Now users have IDs
+
+        # Step 3: add questions and link to users
+        for i, question_data in enumerate(dummy_question_items):
+            question = Question(name=question_data[0], text=question_data[1], author_id=users[question_data[2]].id)
+            db.session.add(question)
+            questions.append(question)
+
+        db.session.flush()  # Now users have IDs
+
+        # Step 4: add qa mappings
+        for i, qa_data in enumerate(dummy_qa_items):
+            qa = QuestionAnswer(question_id=questions[qa_data[0]].id, answer_id=answers[qa_data[1]].id)
+            db.session.add(qa)
+
 
         db.session.commit()

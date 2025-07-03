@@ -2,6 +2,9 @@ from flask import Flask, Blueprint, request, redirect, jsonify, render_template,
 from openai import OpenAI
 from backend.models.data_helper import DataHelper
 from backend.models.question import Question
+from backend.models.answer import Answer
+from backend.models.qa import QuestionAnswer
+from backend.models.user import User
 from backend.models import db
 from dotenv import load_dotenv
 import os
@@ -34,10 +37,6 @@ def ask():
     db.session.commit()
     return jsonify({"answer": answer, "source": "ai"})
 
-# @bp.route('/')
-# def index():
-#     return render_template('index.html')
-
 
 @bp.route('/', defaults={'path': ''})
 @bp.route('/<path:path>')
@@ -53,4 +52,20 @@ def serve(path):
 @bp.route('/data/add')
 def add_data():
     DataHelper.add_dummy_qa_data()
+    return redirect('/')
+
+@bp.route('/data/delete')
+def delete_data():
+    Question.query.delete()
+    Answer.query.delete()
+    QuestionAnswer.query.delete()
+    User.query.delete()
+    db.session.commit()
+    return redirect('/')
+
+@bp.route('/data/recreate')
+def recreate_data():
+    db.drop_all()
+    # db.create_all()
+    db.session.commit()
     return redirect('/')
