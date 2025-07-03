@@ -21,21 +21,38 @@ def ask():
     question_text = data.get("question")
 
     # db = SessionLocal()
-    existing = Question.query.filter_by().filter_by(text=question_text).first()
+    existing = Question.query.filter_by(text=question_text).first()
     #existing = db.query(QuestionAnswer).filter_by(question=question).first()
+    answers = []
     if existing:
-        return jsonify({"answer": existing.answer, "source": "cached"})
+        #retrieve existing answer and ask if user would like an ai answer as well?
+        answerMaps = QuestionAnswer.query.filter_by(question_id=existing.id).all()
+        # print('answers ', *answerMaps, sep='\n')
+        for i, qa_data in enumerate(answerMaps):
+            # print('qa ', *qa_data, sep='\n')
+            answer = Answer.query.filter_by(id=qa_data.answer_id).first()
+            answers.append({
+                "name": answer.name,
+                "text": answer.text,
+            })
 
-    response = openai.chat.completions.create(
-        model="gpt-4",
-        messages=[{"role": "user", "content": question_text}]
-    )
-    answer = response.choices[0].message.content
 
-    question = Question(name="a new question", text=question_text)
-    db.session.add(question)
-    db.session.commit()
-    return jsonify({"answer": answer, "source": "ai"})
+        # return jsonify({"answer": existing.answer, "source": "cached"})
+    else:
+        # look for it in gpt, save question and gpt answer
+        question = Question(name="a new question", text=question_text)
+        db.session.add(question)
+        db.session.commit()
+    # gpt answer stuff figure out how to use it
+    # response = openai.chat.completions.create(
+    #      model="gpt-4",
+    #      messages=[{"role": "user", "content": question_text}]
+    #  )
+    # gptanswer = Answer(name="gpt answer", text=response.choices[0].message.content
+
+    # answer = Answer.query.filter_by(id=2).first()
+    # return jsonify({"answer": answer, "source": "ai"})
+    return jsonify({"answer": answers, "source": "db"})
 
 
 @bp.route('/', defaults={'path': ''})
@@ -66,6 +83,6 @@ def delete_data():
 @bp.route('/data/recreate')
 def recreate_data():
     db.drop_all()
-    # db.create_all()
+    db.create_all()
     db.session.commit()
     return redirect('/')
