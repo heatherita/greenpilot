@@ -1,10 +1,8 @@
-# from user import User
+from datetime import datetime
 from backend.models import db
 from backend.models.answer import Answer
 from backend.models.qa import QuestionAnswer
 from backend.models.question import Question
-# from sqlalchemy.orm.exc import NoResultFound
-# from answer import Answer
 from backend.models.user import User
 
 
@@ -12,9 +10,10 @@ class DataHelper:
     @staticmethod
     def add_dummy_qa_data():
         dummy_users = [
-            ['heather','propes','hbuch4@yahoo.com',''],
-            ['george','moore','gmoore@gmail.com',''],
-            ['randy','jones','randyj@yahoo.com','']
+            {'fullName': 'heather propes', 'email': 'hbuch4@yahoo.com', 'type':'human'},
+            {'fullName': 'george robinson', 'email': 'grobinson@gmail.com', 'type': 'human'},
+            {'fullName': 'randy jones', 'email': 'randyj@yahoo.com', 'type': 'human'},
+            {'fullName': 'GPT-4', 'url': 'openai.com', 'type': 'ai'}
         ]
 
         dummy_question_items = [
@@ -44,7 +43,7 @@ class DataHelper:
 
         # Step 1: add users
         for i, user_data in enumerate(dummy_users):
-            myuser = User(firstName=user_data[0], lastName=user_data[1], email=user_data[2])
+            myuser = User(fullName=user_data.get('fullName'), email=user_data.get('email',''), url=user_data.get('url',''), type=user_data.get('type',''), dateCreated=datetime.now())
             db.session.add(myuser)
             users.append(myuser)
 
@@ -52,7 +51,7 @@ class DataHelper:
 
         # Step 2: add answers and link to users
         for i, answer_data in enumerate(dummy_answer_items):
-            answer = Answer(name=answer_data[0],text=answer_data[1],upvoteCount=answer_data[2],downvoteCount=answer_data[3], author_id=users[answer_data[4]].id)
+            answer = Answer(name=answer_data[0],text=answer_data[1],upvoteCount=answer_data[2],downvoteCount=answer_data[3], user_id=users[answer_data[4]].id, dateCreated=datetime.now())
             db.session.add(answer)
             answers.append(answer)
 
@@ -60,16 +59,16 @@ class DataHelper:
 
         # Step 3: add questions and link to users
         for i, question_data in enumerate(dummy_question_items):
-            question = Question(name=question_data[0], text=question_data[1], author_id=users[question_data[2]].id)
+            question = Question(name=question_data[0], text=question_data[1], user_id=users[question_data[2]].id, dateCreated=datetime.now())
             db.session.add(question)
             questions.append(question)
 
         db.session.flush()  # Now users have IDs
 
         # Step 4: add qa mappings
-        for i, qa_data in enumerate(dummy_qa_items):
-            qa = QuestionAnswer(question_id=questions[qa_data[0]].id, answer_id=answers[qa_data[1]].id)
-            db.session.add(qa)
+        # for i, qa_data in enumerate(dummy_qa_items):
+        #     qa = QuestionAnswer(question_id=questions[qa_data[0]].id, answer_id=answers[qa_data[1]].id, dateCreated=datetime.now())
+        #     db.session.add(qa)
 
 
         db.session.commit()

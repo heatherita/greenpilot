@@ -24,7 +24,7 @@ def create_app():
 
     with app.app_context():
         from backend.models import user, question, answer, qa
-        # db.drop_all()
+        db.drop_all()
         db.create_all()
         # DataHelper.add_dummy_qa_data()
 
