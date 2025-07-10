@@ -1,7 +1,6 @@
 from datetime import datetime
 from backend.models import db
 from backend.models.answer import Answer
-from backend.models.qa import QuestionAnswer
 from backend.models.question import Question
 from backend.models.user import User
 
@@ -17,26 +16,19 @@ class DataHelper:
         ]
 
         dummy_question_items = [
-            ['tree size', 'how big is a tree',0],
-            ['esprit t-shirt', 'when was the first esprit logo t-shirt released?' ,2],
-            ['name origin', 'what is the origin of the name Achebe', 1]
+            {'name':'tree size', 'text':'how big is a tree','user_id':1},
+            {'name':'esprit t-shirt', 'text':'when was the first esprit logo t-shirt released?', 'user_id':3},
+            {'name':'name origin', 'text':'what is the origin of the name Achebe', 'user_id':2 }
         ]
 
         dummy_answer_items = [
-            ['tree small', 'its pretty big', 1,0,1],
-            ['tree other', 'its bigger than a loaf of bread',1,0,2],
-            ['t-shirt well', 'well well well',1,0, 2],
-            ['t-shirt date', 'it was in 1984',1,1, 2],
-            ['name origin', 'Achebe(Nigerian origin) meaning the goddess protects from the Igbo people of Nigeria.',2,1,1]
+            {'name':'tree small', 'text':'its pretty big','upvoteCount':4,'downvoteCount':2,'user_id':1,'question_id':1},
+            {'name':'tree other', 'text':'its bigger than a loaf of bread','upvoteCount':3,'downvoteCount':1,'user_id':1,'question_id':1},
+            {'name':'t-shirt well', 'text':'well well well','upvoteCount':3,'downvoteCount':1,'user_id':2,'question_id':2},
+            {'name':'t-shirt date', 'text':'it was in 1984','upvoteCount':1,'downvoteCount':2,'user_id':2,'question_id':2},
+            {'name':'name origin', 'text':'Achebe(Nigerian origin) meaning the goddess protects from the Igbo people of Nigeria','upvoteCount':2,'downvoteCount':3,'user_id':3,'question_id':3},
         ]
 
-        dummy_qa_items = [
-            [0,0],
-            [0,1],
-            [1,2],
-            [1,3],
-            [2,4],
-            ]
         users = []
         questions = []
         answers = []
@@ -51,7 +43,13 @@ class DataHelper:
 
         # Step 2: add answers and link to users
         for i, answer_data in enumerate(dummy_answer_items):
-            answer = Answer(name=answer_data[0],text=answer_data[1],upvoteCount=answer_data[2],downvoteCount=answer_data[3], user_id=users[answer_data[4]].id, dateCreated=datetime.now())
+            answer = Answer(name=answer_data.get('name'),
+                            text=answer_data.get('text'),
+                            upvoteCount=answer_data.get('upvoteCount'),
+                            downvoteCount=answer_data.get('downvoteCount'),
+                            user_id=users[answer_data.get('user_id')].id,
+                            question_id=answer_data.get('question_id'),
+                            dateCreated=datetime.now())
             db.session.add(answer)
             answers.append(answer)
 
@@ -59,16 +57,13 @@ class DataHelper:
 
         # Step 3: add questions and link to users
         for i, question_data in enumerate(dummy_question_items):
-            question = Question(name=question_data[0], text=question_data[1], user_id=users[question_data[2]].id, dateCreated=datetime.now())
+            question = Question(name=question_data.get('name'),
+                                text=question_data.get('text'),
+                                user_id=users[question_data.get('user_id')].id,
+                                dateCreated=datetime.now())
             db.session.add(question)
             questions.append(question)
 
         db.session.flush()  # Now users have IDs
-
-        # Step 4: add qa mappings
-        # for i, qa_data in enumerate(dummy_qa_items):
-        #     qa = QuestionAnswer(question_id=questions[qa_data[0]].id, answer_id=answers[qa_data[1]].id, dateCreated=datetime.now())
-        #     db.session.add(qa)
-
 
         db.session.commit()
