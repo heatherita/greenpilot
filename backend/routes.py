@@ -110,15 +110,15 @@ def ask():
 
 
 
-@bp.route('/', defaults={'path': ''})
-@bp.route('/<path:path>')
-def serve(path):
-    # build_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../frontend/build')
-    # print("Serving from build_dir:", build_dir)
-    if path and os.path.exists(os.path.join(current_app.static_folder, path)):
-        return send_from_directory(current_app.static_folder, path)
-    else:
-        return send_from_directory(current_app.static_folder, 'index.html')
+# @bp.route('/', defaults={'path': ''})
+# @bp.route('/<path:path>')
+# def serve(path):
+#     build_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../frontend/dist')
+#     print("Serving from build_dir:", build_dir)
+#     if path and os.path.exists(os.path.join(current_app.static_folder, path)):
+#         return send_from_directory(current_app.static_folder, path)
+#     else:
+#         return send_from_directory(current_app.static_folder, 'index.html')
 
 
 @bp.route('/data/add')
