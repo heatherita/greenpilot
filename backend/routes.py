@@ -2,12 +2,11 @@ from datetime import datetime
 
 from flask import Flask, Blueprint, request, redirect, jsonify, render_template, send_from_directory, current_app
 from openai import OpenAI
-from spacy.vocab import is_stop
-from sqlalchemy.orm import joinedload
+from sqlalchemy import desc
 from backend.models.data_helper import DataHelper
 from backend.models.question import Question
 from backend.models.answer import Answer
-from backend.models.questionschema import QuestionSchema
+from backend.models.schemas import QuestionSchema
 from backend.models.user import User
 from backend.models import db
 from dotenv import load_dotenv
@@ -83,13 +82,13 @@ def ask():
     filtered_lex = [token.text for token in lex if not token.is_stop]
     question_name = ' '.join(filtered_lex)
 
-    existing = Question.query.filter_by(text=question_text).first()
+    existing = Question.query.filter_by(text=question_text).order_by(desc(Question.dateCreated)).first()
     # print('existing: ', existing)
 
     fuzzy_str = '%'.join(filtered_lex)
     fuzzy_str = "%{}%".format(fuzzy_str)
     print("fuzzy_str: ",fuzzy_str)
-    similar = Question.query.filter(Question.text.like(fuzzy_str)).all()
+    similar = Question.query.filter(Question.text.like(fuzzy_str)).order_by(desc(Question.dateCreated)).all()
     single_schema = QuestionSchema(many=False)
     many_schema = QuestionSchema(many=True)
     similar_result = many_schema.dump(similar)

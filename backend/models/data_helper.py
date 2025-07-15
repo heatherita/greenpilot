@@ -24,6 +24,7 @@ class DataHelper:
         dummy_answer_items = [
             {'name':'tree small', 'text':'its pretty big','upvoteCount':4,'downvoteCount':2,'user_id':1,'question_id':1},
             {'name':'tree other', 'text':'its bigger than a loaf of bread','upvoteCount':3,'downvoteCount':1,'user_id':1,'question_id':1},
+            {'name':'tree other', 'text':'its small','upvoteCount':5,'downvoteCount':10,'user_id':1,'question_id':1},
             {'name':'t-shirt well', 'text':'well well well','upvoteCount':3,'downvoteCount':1,'user_id':2,'question_id':2},
             {'name':'t-shirt date', 'text':'it was in 1984','upvoteCount':1,'downvoteCount':2,'user_id':2,'question_id':2},
             {'name':'name origin', 'text':'Achebe(Nigerian origin) meaning the goddess protects from the Igbo people of Nigeria','upvoteCount':2,'downvoteCount':3,'user_id':3,'question_id':3},

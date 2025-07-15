@@ -1,5 +1,5 @@
-from sqlalchemy.sql import func
 from backend.models import db
+from backend.models.answer import Answer
 
 
 class Question(db.Model):
@@ -10,4 +10,4 @@ class Question(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     dateCreated = db.Column(db.DateTime)
     user_question = db.relationship('User', back_populates='questions')
-    answers = db.relationship("Answer", back_populates="question")
+    answers = db.relationship("Answer", back_populates="question",order_by=Answer.upvoteCount.desc())
