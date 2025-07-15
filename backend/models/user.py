@@ -1,4 +1,7 @@
 from datetime import datetime
+
+from sqlalchemy.orm import lazyload
+
 from backend.models import db
 
 
@@ -12,5 +15,5 @@ class User(db.Model):
     type = db.Column(db.String(200))
     dateCreated = db.Column(db.DateTime)
 
-    questions = db.relationship('Question', back_populates='user_question', cascade="all, delete-orphan")
-    answers = db.relationship('Answer', back_populates='user_answer', cascade="all, delete-orphan")
+    questions = db.relationship('Question', back_populates='user_question', cascade="all, delete-orphan",lazy="select")
+    answers = db.relationship('Answer', back_populates='user_answer', cascade="all, delete-orphan",lazy="select")

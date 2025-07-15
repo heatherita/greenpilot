@@ -94,8 +94,8 @@ def ask():
     similar_result = many_schema.dump(similar)
     if existing:
         question_result = single_schema.dump(existing)
-        print('single question json: ', json.dumps(question_result, indent=4))
-        print('single question json: ', json.dumps(similar_result, indent=4))
+        print('existing question json: ', json.dumps(question_result, indent=4))
+        print('similar question json: ', json.dumps(similar_result, indent=4))
     else:
     #     # look for it in gpt, save question and gpt answer
         question = Question(name=question_name, text=question_text, user_id=1, dateCreated=datetime.now())
