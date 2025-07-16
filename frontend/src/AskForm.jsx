@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import AiAskForm from "./AiAskForm";
 
-export default function AskForm({ setQuestion, setSimilarQuestions }) {
+export default function AskForm({
+  question,
+  setQuestion,
+  setQuestionAI,
+  setSimilarQuestions,
+}) {
+  const [showAiAsk, setShowAiAsk] = useState(false);
   const [questionText, setQuestionText] = useState("how big is a tree");
 
   const handleSubmit = async (e) => {
@@ -16,17 +22,7 @@ export default function AskForm({ setQuestion, setSimilarQuestions }) {
     console.log("data returned: ", data);
     setQuestion(data.question);
     setSimilarQuestions(data.similarQuestions);
-
-    // Show checkbox if there are no answers
-    if (
-      data.question &&
-      Array.isArray(data.question.answers) &&
-      data.question.answers.length === 0
-    ) {
-      setShowCheckbox(true);
-    } else {
-      setShowCheckbox(false);
-    }
+    setShowAiAsk(data.question && data.question.answers.length === 0);
   };
 
   return (
@@ -47,7 +43,9 @@ export default function AskForm({ setQuestion, setSimilarQuestions }) {
           >
             Ask a question
           </button>
-          <AiAskForm question={question} />
+          {showAiAsk && (
+            <AiAskForm question={question} setQuestionAI={setQuestionAI} />
+          )}
         </form>
       </div>
     </div>

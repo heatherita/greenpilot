@@ -15,6 +15,7 @@ export default function App() {
         <main className="flex-1 p-6">
           <section className="p-6 rounded-soft shadow-soft  border-blue-300">
             <AskForm
+              question={question}
               setQuestion={setQuestion}
               setQuestionAI={setQuestionAI}
               setSimilarQuestions={setSimilarQuestions}

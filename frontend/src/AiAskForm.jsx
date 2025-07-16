@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 export default function AiAskForm({ question, setQuestionAI }) {
-  // const [questionAI, setQuestionAI] = useState("");
   const [selectedLlm, setSelectedLlm] = useState({
     label: labelVar,
     value: valueVar,
@@ -13,10 +12,6 @@ export default function AiAskForm({ question, setQuestionAI }) {
     { label: "Copilot", value: "4" },
   ];
 
-  //   const [questionText, setQuestionText] = useState("how big is a tree");
-  //   const [showCheckbox, setShowCheckbox] = useState(false);
-  //   const [questionAISent, setQuestionAISent] = useState(false);
-
   const handleAskAI = async () => {
     // POST to notification endpoint
     const res = await fetch("/question/ai/ask", {
@@ -24,9 +19,6 @@ export default function AiAskForm({ question, setQuestionAI }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ questionText, userId }),
     });
-    // if (res.ok) {
-    //   setQuestionAISent(true);
-    // }
     const data = await res.json();
     console.log("data returned: ", data);
     setQuestionAI(data.question);
