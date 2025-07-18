@@ -2,8 +2,8 @@ import React from "react";
 import Moment from "moment";
 
 export default function CommunityAnswers({ question, humanAnswers }) {
-  console.log("found question passed to CommunityAnswers:", humanAnswers);
-  if (!humanAnswers) return null;
+  // console.log("found answers passed to CommunityAnswers:", humanAnswers);
+  // if (!humanAnswers || humanAnswers.length === 0) return null;
 
   return (
     <div className="flex min-w-[240px] flex-col  rounded-lg shadow-sm  bg-stone-600/20 border-stone-600 p-4 gap-2">

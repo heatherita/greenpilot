@@ -5,20 +5,21 @@ import AiAskForm from "./AiAskForm";
 import StagedAiAnswer from "./StagedAiAnswer";
 import OriginalQuestion from "./OriginalQuestion";
 import CommunityAnswers from "./CommunityAnswers";
+import AiAnswers from "./AiAnswers";
 import SimilarQuestions from "./SimilarQuestions";
 
 export default function App() {
   const [question, setQuestion] = useState("");
   const [aiAnswers, setAiAnswers] = useState([]);
   const [humanAnswers, setHumanAnswers] = useState([]);
-  const [stagedAnswerAI, setStagedAnswerAI] = useState("");
+  const [stagedAnswerAi, setStagedAnswerAi] = useState("");
   const [similarQuestions, setSimilarQuestions] = useState([]);
   const [showAiAsk, setShowAiAsk] = useState(false);
   const [showStagedAiAnswer, setShowStagedAiAnswer] = useState(false);
 
   const resetAll = () => {
     setQuestion("");
-    setAnswerAI("");
+    setStagedAnswerAi("");
     setSimilarQuestions([]);
     setShowAiAsk(false);
     setShowStagedAiAnswer(false);
@@ -35,8 +36,8 @@ export default function App() {
                 <h2 className="text-2xl font-bold">Ask</h2>
                 <AskForm
                   setQuestion={setQuestion}
-                  setAiAnswers={aiAnswers}
-                  setHumanAnswers={humanAnswers}
+                  setAiAnswers={setAiAnswers}
+                  setHumanAnswers={setHumanAnswers}
                   setSimilarQuestions={setSimilarQuestions}
                   setShowAiAsk={setShowAiAsk}
                   resetAll={resetAll}
@@ -46,7 +47,7 @@ export default function App() {
                 <AiAskForm
                   question={question}
                   setShowStagedAiAnswer={setShowStagedAiAnswer}
-                  setStagedAnswerAI={setStagedAnswerAI}
+                  setStagedAnswerAi={setStagedAnswerAi}
                 />
               )}
             </div>
@@ -58,22 +59,23 @@ export default function App() {
           </section>
           <section className="bg-white p-6 rounded-soft shadow-soft">
             <div className="relative flex flex-col space-y-6">
-              <AiAnswers
-                question={question}
-                humanAnswers={humanAnswers}
-              />
+              {!!aiAnswers && aiAnswers.length > 0 && (
+                <AiAnswers question={question} aiAnswers={aiAnswers} />
+              )}
             </div>
           </section>
           <section className="bg-white p-6 rounded-soft shadow-soft">
             <div className="relative flex flex-col space-y-6">
-              <CommunityAnswers
-                question={question}
-                humanAnswers={humanAnswers}
-              />
+              {!!humanAnswers && humanAnswers.length > 0 && (
+                <CommunityAnswers
+                  question={question}
+                  humanAnswers={humanAnswers}
+                />
+              )}
             </div>
           </section>
           <section className="bg-white p-6 rounded-soft shadow-soft">
-            {showStagedAiAnswer && <StagedAiAnswer answer={answerAI} />}
+            {showStagedAiAnswer && <StagedAiAnswer answer={stagedAnswerAI} />}
           </section>
           <section className="bg-white p-6 rounded-soft shadow-soft">
             <div className="relative flex flex-col space-y-6">

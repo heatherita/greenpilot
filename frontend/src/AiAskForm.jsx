@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 export default function AiAskForm({
   question,
-  setStagedAnswerAI,
+  setStagedAnswerAi,
   setShowStagedAiAnswer,
 }) {
   const [selectedLlm, setSelectedLlm] = useState({
@@ -29,7 +29,7 @@ export default function AiAskForm({
     });
     const data = await res.json();
     console.log("data returned: ", data);
-    setStagedAnswerAI(data.answer);
+    setStagedAnswerAi(data.answer);
     const answerText = data.answer?.text;
     setShowStagedAiAnswer(!!answerText && answerText.length > 0);
   };
