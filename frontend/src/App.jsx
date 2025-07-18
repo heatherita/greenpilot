@@ -1,12 +1,28 @@
 import React, { useState } from "react";
 import Menu from "./Menu";
-import AnswerList from "./AnswerList";
 import AskForm from "./AskForm";
+import AiAskForm from "./AiAskForm";
+import StagedAiAnswer from "./StagedAiAnswer";
+import OriginalQuestion from "./OriginalQuestion";
+import CommunityAnswers from "./CommunityAnswers";
+import SimilarQuestions from "./SimilarQuestions";
 
 export default function App() {
   const [question, setQuestion] = useState("");
-  const [questionAI, setQuestionAI] = useState("");
+  const [aiAnswers, setAiAnswers] = useState([]);
+  const [humanAnswers, setHumanAnswers] = useState([]);
+  const [stagedAnswerAI, setStagedAnswerAI] = useState("");
   const [similarQuestions, setSimilarQuestions] = useState([]);
+  const [showAiAsk, setShowAiAsk] = useState(false);
+  const [showStagedAiAnswer, setShowStagedAiAnswer] = useState(false);
+
+  const resetAll = () => {
+    setQuestion("");
+    setAnswerAI("");
+    setSimilarQuestions([]);
+    setShowAiAsk(false);
+    setShowStagedAiAnswer(false);
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -14,19 +30,55 @@ export default function App() {
         <Menu />
         <main className="flex-1 p-6">
           <section className="p-6 rounded-soft shadow-soft  border-blue-300">
-            <AskForm
-              question={question}
-              setQuestion={setQuestion}
-              setQuestionAI={setQuestionAI}
-              setSimilarQuestions={setSimilarQuestions}
-            />
+            <div className="relative flex flex-col space-y-6">
+              <div className="flex min-w-[240px] flex-col  rounded-lg shadow-sm border-2 border-stone-600 p-4 gap-2">
+                <h2 className="text-2xl font-bold">Ask</h2>
+                <AskForm
+                  setQuestion={setQuestion}
+                  setAiAnswers={aiAnswers}
+                  setHumanAnswers={humanAnswers}
+                  setSimilarQuestions={setSimilarQuestions}
+                  setShowAiAsk={setShowAiAsk}
+                  resetAll={resetAll}
+                />
+              </div>
+              {showAiAsk && (
+                <AiAskForm
+                  question={question}
+                  setShowStagedAiAnswer={setShowStagedAiAnswer}
+                  setStagedAnswerAI={setStagedAnswerAI}
+                />
+              )}
+            </div>
           </section>
           <section className="bg-white p-6 rounded-soft shadow-soft">
-            <AnswerList
-              question={question}
-              questionAI={questionAI}
-              similarQuestions={similarQuestions}
-            />
+            <div className="relative flex flex-col space-y-6">
+              <OriginalQuestion question={question} />
+            </div>
+          </section>
+          <section className="bg-white p-6 rounded-soft shadow-soft">
+            <div className="relative flex flex-col space-y-6">
+              <AiAnswers
+                question={question}
+                humanAnswers={humanAnswers}
+              />
+            </div>
+          </section>
+          <section className="bg-white p-6 rounded-soft shadow-soft">
+            <div className="relative flex flex-col space-y-6">
+              <CommunityAnswers
+                question={question}
+                humanAnswers={humanAnswers}
+              />
+            </div>
+          </section>
+          <section className="bg-white p-6 rounded-soft shadow-soft">
+            {showStagedAiAnswer && <StagedAiAnswer answer={answerAI} />}
+          </section>
+          <section className="bg-white p-6 rounded-soft shadow-soft">
+            <div className="relative flex flex-col space-y-6">
+              <SimilarQuestions similarQuestions={similarQuestions} />
+            </div>
           </section>
         </main>
       </div>
