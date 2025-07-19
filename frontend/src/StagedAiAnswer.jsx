@@ -1,7 +1,7 @@
 import React from "react";
 import Moment from "moment";
 
-export default function StagedAiAnswer({ answer }) {
+export default function StagedAiAnswer({ question, answer }) {
   console.log("Found AI Staged Answer:", answer);
   if (!answer) return null;
 
@@ -10,7 +10,7 @@ export default function StagedAiAnswer({ answer }) {
     const res = await fetch("/accept/ai/answer_text", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ answer }),
+      body: JSON.stringify({ question, answer }),
     });
     const data = await res.json();
     console.log("data returned: ", data);

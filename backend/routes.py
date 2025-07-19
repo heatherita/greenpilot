@@ -37,7 +37,7 @@ def ask_ai():
         messages=[{"role": "user", "content": question["text"].rstrip('[!?.]')}]
     )
     gpt_resp = response.choices[0].message.content
-    gpt_answer = Answer(name="", text=gpt_resp, dateCreated=datetime.now(), user_id=llm_user.id, user_answer=llm_user, question_id=question.id)
+    gpt_answer = Answer(name="", text=gpt_resp, dateCreated=datetime.now(), user_id=llm_user.id, user_answer=llm_user, question_id=question["id"])
     answer_schema = AnswerSchema(many=False)
     answer = answer_schema.dump(gpt_answer)
     # answer = {"text": gpt_resp, "user": llm_user}
@@ -47,13 +47,14 @@ def ask_ai():
 def accept_answer_ai():
     print('in accept_answer_ai')
     data = request.json
+    question = data.get("question")
     answer = data.get("answer")
     llm_user = answer["user_answer"]
     print('answer : ', answer)
 
     gpt_lex = remove_stopwords(answer["text"])
     gpt_resp_name = ' '.join(gpt_lex[:3])
-    gpt_answer = Answer(name=gpt_resp_name, text=answer["text"], dateCreated=datetime.now(), user_id=llm_user["id"], question_id=answer["question_id"])
+    gpt_answer = Answer(name=gpt_resp_name, text=answer["text"], dateCreated=datetime.now(), user_id=llm_user["id"], question_id=question["id"])
     # answer["name"] = gpt_resp_name
     # answer["user_answer"] = None
     # answer_schema = AnswerSchema(many=False)
@@ -82,6 +83,7 @@ def ask():
     existing = Question.query.filter_by(text=question_text.rstrip('[!?.]')).order_by(desc(Question.dateCreated)).first()
     # print('existing: ', existing)
 
+    return_json = {}
     if existing:
         question_result = question_schema.dump(existing)
         print('existing question json: ', json.dumps(question_result, indent=4))
@@ -92,8 +94,10 @@ def ask():
             answers_human = [item for item in answers if item.user_answer.type == "human"]
             print("ai answers", answers_ai)
             print("human answers", answers_human)
-            answers_ai_result = answers_schema.dumps(answers_ai, indent=4)
-            answers_human_result = answers_schema.dumps(answers_human, indent=4)
+            answers_ai_result = answers_schema.dump(answers_ai)
+            answers_human_result = answers_schema.dump(answers_human)
+            return_json["humanAnswers"] = answers_human_result
+            return_json["aiAnswers"] = answers_ai_result
     else:
     #     # look for it in gpt, save question and gpt answer
         question = Question(name=question_name, text=question_text, user_id=1, dateCreated=datetime.now())
@@ -101,17 +105,22 @@ def ask():
         db.session.flush()
         question_result = question_schema.dump(question)
 
+    return_json["question"] = question_result
     #get similar questions
     fuzzy_str = "%{}%".format('%'.join(filtered_lex))
     print("fuzzy_str: ", fuzzy_str)
-    similar = Question.query.filter(Question.text.like(fuzzy_str)).order_by(desc(Question.dateCreated)).all()
+    # weird NOT IN query syntax
+    similar = (Question.query.filter(Question.text.like(fuzzy_str))
+               .filter(~Question.id.in_([question_result["id"]]))
+               .order_by(desc(Question.dateCreated)).all())
     questions_schema = QuestionSchema(many=True)
     similar_result = questions_schema.dump(similar)
     print('similar question json: ', json.dumps(similar_result, indent=4))
-
+    return_json["similarQuestions"] = similar_result
     #clean up
     db.session.commit()
-    return jsonify({ "question": question_result, "aiAnswers": answers_ai_result, "humanAnswers": answers_human_result, "similarQuestions": similar_result })
+    # return jsonify({ "question": question_result, "aiAnswers": answers_ai_result, "humanAnswers": answers_human_result, "similarQuestions": similar_result })
+    return jsonify(return_json)
 
 def remove_stopwords(raw_text):
     # Load spaCy English model

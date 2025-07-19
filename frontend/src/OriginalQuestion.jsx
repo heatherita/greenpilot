@@ -18,11 +18,11 @@ export default function OriginalQuestion({ question }) {
           </div>
         </a>
         <div className="text-slate-800 w-fit inline-block rounded-md p-2">
-          {question.user_question.fullName}
+          {question?.user_question?.fullName}
         </div>
 
         <div className="text-slate-800 w-fit inline-block rounded-md p-2">
-          {question.user_question.type}
+          {question?.user_question?.type}
         </div>
 
         <div className="text-slate-800 w-fit inline-block rounded-md p-2">

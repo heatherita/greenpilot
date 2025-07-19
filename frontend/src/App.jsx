@@ -25,6 +25,14 @@ export default function App() {
     setShowStagedAiAnswer(false);
   };
 
+  const resetSome = () => {
+    setQuestion("");
+    // setStagedAnswerAi("");
+    // setSimilarQuestions([]);
+    // setShowAiAsk(false);
+    // setShowStagedAiAnswer(false);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <div className="flex min-h-screen">
@@ -75,11 +83,20 @@ export default function App() {
             </div>
           </section>
           <section className="bg-white p-6 rounded-soft shadow-soft">
-            {showStagedAiAnswer && <StagedAiAnswer answer={stagedAnswerAI} />}
+            {showStagedAiAnswer && (
+              <StagedAiAnswer question={question} answer={stagedAnswerAi} />
+            )}
           </section>
           <section className="bg-white p-6 rounded-soft shadow-soft">
             <div className="relative flex flex-col space-y-6">
-              <SimilarQuestions similarQuestions={similarQuestions} />
+              <SimilarQuestions
+                similarQuestions={similarQuestions}
+                setQuestion={setQuestion}
+                setAiAnswers={setAiAnswers}
+                setHumanAnswers={setHumanAnswers}
+                setShowAiAsk={setShowAiAsk}
+                resetAll={resetAll}
+              />
             </div>
           </section>
         </main>

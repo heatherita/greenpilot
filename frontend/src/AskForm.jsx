@@ -23,10 +23,19 @@ export default function AskForm({
     });
     const data = await res.json();
     console.log("data returned: ", data);
+
+    console.log(
+      "aiAnswers returned: ",
+      data.aiAnswers + " aiAnswers type: " + typeof aiAnswers
+    );
+    console.log(
+      "humanAnswers returned: ",
+      data.humanAnswers + " humanAnswers type: " + typeof humanAnswers
+    );
     setQuestion(data.question);
-    setAiAnswers(data.aiAnswers);
-    setHumanAnswers(data.humanAnswers);
-    setSimilarQuestions(data.similarQuestions);
+    setAiAnswers(data.aiAnswers || []);
+    setHumanAnswers(data.humanAnswers || []);
+    setSimilarQuestions(data.similarQuestions || []);
     // const answers = data.question?.answers;
     setShowAiAsk(
       //!!data.question && (!Array.isArray(answers) || answers.length === 0)
