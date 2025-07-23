@@ -40,31 +40,60 @@ def ask_ai():
     gpt_answer = Answer(name="", text=gpt_resp, dateCreated=datetime.now(), user_id=llm_user.id, user_answer=llm_user, question_id=question["id"])
     answer_schema = AnswerSchema(many=False)
     answer = answer_schema.dump(gpt_answer)
-    # answer = {"text": gpt_resp, "user": llm_user}
     return jsonify({"answer": answer})
+
+@bp.route('/answer/user/answer_text',methods=['POST'])
+def answer_user():
+    print('in answer_user')
+    data = request.json
+    question_id = data.get("questionId")
+    print('question id : ', question_id)
+    answer_text = data.get("answerText")
+    print('answer text: ', answer_text)
+    return_json = {}
+
+    user = User.query.filter_by(email="hbuch4@yahoo.com").first()
+
+    print('human_user_name: ', user.fullName, 'human_user: ',user.id)
+
+    user_answer = Answer(name="", text=answer_text, dateCreated=datetime.now(), user_id=user.id, question_id=question_id)
+
+    # answer = {"text": gpt_resp, "user": llm_user}
+    db.session.add(user_answer)
+    db.session.flush()
+    db.session.commit()
+
+    question = Question.query.filter_by(id=question_id).first()
+    answers = question.answers
+    answers_schema = AnswerSchema(many=True)
+
+    if answers:
+        answers_human = [item for item in answers if item.user_answer.type == "human"]
+        print("human answers", answers_human)
+        answers_human_result = answers_schema.dump(answers_human)
+        return_json["humanAnswers"] = answers_human_result
+
+    return jsonify(return_json)
 
 @bp.route('/accept/ai/answer_text',methods=['POST'])
 def accept_answer_ai():
     print('in accept_answer_ai')
     data = request.json
     question = data.get("question")
-    answer = data.get("answer")
-    llm_user = answer["user_answer"]
-    print('answer : ', answer)
+    answer_result = data.get("stagedAiAnswer")
 
-    gpt_lex = remove_stopwords(answer["text"])
+    llm_user = answer_result["user_answer"]
+    print('answer_result : ', answer_result)
+
+    gpt_lex = remove_stopwords(answer_result["text"])
     gpt_resp_name = ' '.join(gpt_lex[:3])
-    gpt_answer = Answer(name=gpt_resp_name, text=answer["text"], dateCreated=datetime.now(), user_id=llm_user["id"], question_id=question["id"])
-    # answer["name"] = gpt_resp_name
-    # answer["user_answer"] = None
-    # answer_schema = AnswerSchema(many=False)
-    # answer = answer_schema.dump(answer)
+    gpt_answer = Answer(name=gpt_resp_name, text=answer_result["text"], dateCreated=datetime.now(), user_id=llm_user["id"], question_id=question["id"])
 
     db.session.add(gpt_answer)
     db.session.flush()
     db.session.commit()
 
-    return jsonify({"answer": answer})
+    return jsonify({"answer": answer_result})
 
 # returns json of question, humans answers
 @bp.route("/ask/user/question_text", methods=['POST'])
@@ -107,20 +136,42 @@ def ask():
 
     return_json["question"] = question_result
     #get similar questions
-    fuzzy_str = "%{}%".format('%'.join(filtered_lex))
-    print("fuzzy_str: ", fuzzy_str)
-    # weird NOT IN query syntax
-    similar = (Question.query.filter(Question.text.like(fuzzy_str))
+    if filtered_lex:
+        fuzzy_str = "%{}%".format('%'.join(filtered_lex))
+        print("fuzzy_str: ", fuzzy_str)
+        # weird NOT IN query syntax
+        similar = (Question.query.filter(Question.text.like(fuzzy_str))
                .filter(~Question.id.in_([question_result["id"]]))
                .order_by(desc(Question.dateCreated)).all())
-    questions_schema = QuestionSchema(many=True)
-    similar_result = questions_schema.dump(similar)
-    print('similar question json: ', json.dumps(similar_result, indent=4))
-    return_json["similarQuestions"] = similar_result
+        questions_schema = QuestionSchema(many=True)
+        similar_result = questions_schema.dump(similar)
+        print('similar question json: ', json.dumps(similar_result, indent=4))
+        return_json["similarQuestions"] = similar_result
     #clean up
     db.session.commit()
-    # return jsonify({ "question": question_result, "aiAnswers": answers_ai_result, "humanAnswers": answers_human_result, "similarQuestions": similar_result })
     return jsonify(return_json)
+
+@bp.route('/search/question/<int:question_id>')
+def search_question(question_id):
+    return_json = {}
+    question = Question.query.filter_by(id=question_id).first()
+    answers = question.answers
+    print("search_question question_id: ", question_id, "answers: ", answers)
+    answers_schema = AnswerSchema(many=True)
+
+    if answers:
+        answers_ai = [item for item in answers if item.user_answer.type == "ai"]
+        answers_human = [item for item in answers if item.user_answer.type == "human"]
+        print("ai answers", answers_ai)
+        print("human answers", answers_human)
+        answers_ai_result = answers_schema.dump(answers_ai)
+        answers_human_result = answers_schema.dump(answers_human)
+        return_json["humanAnswers"] = answers_human_result
+        return_json["aiAnswers"] = answers_ai_result
+
+    return jsonify(return_json)
+
+
 
 def remove_stopwords(raw_text):
     # Load spaCy English model

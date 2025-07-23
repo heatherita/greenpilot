@@ -1,28 +1,50 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Moment from "moment";
 
-export default function StagedAiAnswer({ question, answer }) {
-  console.log("Found AI Staged Answer:", answer);
-  if (!answer) return null;
+export default function StagedAiAnswer({
+  question,
+  stagedAiAnswer,
+  setStagedAiAnswer,
+  setAiAnswers,
+  setHumanAnswers,
+}) {
+  console.log("Found AI Staged Answer:", stagedAiAnswer);
+  if (!stagedAiAnswer) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const res = await fetch("/accept/ai/answer_text", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question, answer }),
+      body: JSON.stringify({ question, stagedAiAnswer }),
     });
     const data = await res.json();
+    setStagedAiAnswer("");
+    refreshAnswers();
     console.log("data returned: ", data);
+  };
+
+  // console.log("updating answers with useeffect in staged ai answer");
+  const refreshAnswers = () => {
+    fetch("/search/question/" + question.id)
+      .then((res) => res.json())
+      .then((data) => {
+        setHumanAnswers(data?.humanAnswers || []);
+        setAiAnswers(data?.aiAnswers || []);
+      });
   };
 
   return (
     <div className="relative flex flex-col space-y-6">
       <div className="flex min-w-[240px] flex-col  rounded-lg shadow-sm  bg-stone-600/20 border-stone-600 p-4 gap-2">
-        <h2 className="text-2xl font-bold">AI Answer</h2>
+        <h2 className="text-2xl font-bold">Staged AI Answer</h2>
 
         <div className="text-slate-800 flex w-full items-center rounded-md p-2">
-          <pre>{answer.text}</pre>
+          {stagedAiAnswer?.text.includes("\n") ? (
+            <pre>{stagedAiAnswer.text}</pre>
+          ) : (
+            <div>{stagedAiAnswer.text}</div>
+          )}
         </div>
         <div className="text-slate-800 w-fit inline-block rounded-md p-2">
           Accept Answer
@@ -48,10 +70,10 @@ export default function StagedAiAnswer({ question, answer }) {
         </div>
 
         <div className="text-slate-800 w-fit inline-block rounded-md p-2">
-          {answer?.user_answer.fullName}
+          {stagedAiAnswer?.user_answer.fullName}
         </div>
         <div className="text-slate-800 w-fit inline-block rounded-md p-2">
-          {answer?.user_answer?.type}
+          {stagedAiAnswer?.user_answer?.type}
         </div>
       </div>
     </div>

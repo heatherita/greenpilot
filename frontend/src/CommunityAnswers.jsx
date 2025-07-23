@@ -3,12 +3,12 @@ import Moment from "moment";
 
 export default function CommunityAnswers({ question, humanAnswers }) {
   // console.log("found answers passed to CommunityAnswers:", humanAnswers);
- if (!humanAnswers || humanAnswers.length === 0) return null;
+  if (!humanAnswers || humanAnswers.length === 0) return null;
 
   return (
-    <div className="flex min-w-[240px] flex-col  rounded-lg shadow-sm  bg-stone-600/20 border-stone-600 p-4 gap-2">
+    <div className="flex min-w-[240px] flex-col h-64  rounded-lg shadow-sm  bg-stone-600/20 border-stone-600 p-4 gap-2">
       <h2 className="text-2xl font-bold">Human Answers</h2>
-      <ul className="space-y-4 text-left text-gray-500 dark:text-gray-400">
+      <ul className="space-y-4 text-left overflow-y-auto text-gray-500 dark:text-gray-400">
         {humanAnswers.map((answer, idx) => (
           <li key={idx}>
             <div className="text-slate-800 flex w-full items-center rounded-md p-2">

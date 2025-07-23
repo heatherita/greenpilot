@@ -7,6 +7,15 @@
 @import "tailwindcss/src/css/preflight.css" layer(base);
 @import "tailwindcss/utilities.css" layer(utilities);
 
+
+
+@layer utilities {
+  .modal-overlay {
+    z-index: 40;
+  }
+}
+
+
 /*
 body {
   margin: 0;

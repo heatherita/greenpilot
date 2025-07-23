@@ -4,10 +4,8 @@ import Modal from "react-modal";
 export default function AiAskForm({
   question,
   setStagedAnswerAi,
-  onClose,
+  closeModal,
   isOpen,
-  setIsOpen,
-  // onRequestClose,
 }) {
   const [selectedLlm, setSelectedLlm] = useState({
     label: "",
@@ -35,11 +33,7 @@ export default function AiAskForm({
     console.log("data returned: ", data);
     setStagedAnswerAi(data.answer);
     const answerText = data.answer?.text;
-    setIsOpen(false);
-
-    // {
-    //   isOpen;
-    // }
+    closeModal();
   };
 
   // Handle selection change
@@ -52,7 +46,6 @@ export default function AiAskForm({
   return (
     <Modal
       isOpen={isOpen}
-      // onRequestClose={setIsOpen(false)}
       style={{
         overlay: {
           zIndex: 40,
@@ -88,7 +81,7 @@ export default function AiAskForm({
         >
           Ask Selected AI
         </button>
-        <button onClick={onClose}>Close</button>
+        <button onClick={closeModal}>Close</button>
       </form>
     </Modal>
   );
